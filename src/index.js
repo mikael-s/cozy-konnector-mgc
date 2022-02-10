@@ -13,7 +13,7 @@ async function fetch(fields) {
   log('info', 'Successfully logged in')
 
   log('info', 'Fetching the list of documents')
-  await visit(`${baseUrlConnected}/mes-remboursements`)
+  await visit(`${baseUrlConnected}/mes-documents`)
   const documents = await parseDocuments()
 
   var cookieHeader = browser.cookies.serialize(
@@ -24,7 +24,7 @@ async function fetch(fields) {
     headers: { Cookie: cookieHeader }
   })
 
-  await this.saveBills(documents, fields.folderPath, {
+  await this.saveFiles(documents, fields.folderPath, {
     requestInstance: request_cookies,
     identifiers: ['Mgc']
   })
@@ -59,21 +59,50 @@ async function authenticate(username, password) {
 }
 
 function parseDocuments() {
+  // Relevés
   var nodes = browser.evaluate(
     'document.querySelectorAll("a.remboursements__month__pdf")'
   )
   var documents = []
+  var id
+  var date
   for (var i = 0; i < nodes.length; i++) {
-    var date = extractDate(nodes[i].title.match(/[0-9/]+$/)[0])
-    var id = nodes[i].href.match(/[0-9]+$/)[0]
+    date = extractDate(
+      nodes[i].parentNode.parentNode.querySelector('span').textContent
+    )
+    id = nodes[i].href.match(/[0-9]+$/)[0]
+
     documents.push({
       fileurl: nodes[i].href,
       vendor: VENDOR,
       vendorRef: id,
       date: new Date(date + '-01'),
-      filename: `${date}_${id}.pdf`,
-      currency: '€',
-      amount: 10
+      filename: `${date}_${id}.pdf`
+    })
+  }
+  // Documents
+  nodes = browser.evaluate('document.querySelectorAll("a.documents__pdf")')
+  for (i = 0; i < nodes.length; i++) {
+    id = nodes[i].href.match(/documentId=([0-9_]+)/)[1]
+    var title = decodeURI(nodes[i].href.match(/documentName=(.*)$/)[1])
+      .replace(/\+/g, ' ')
+      .trim()
+    date = title.match(/([0-9]{1,2})%2F([0-9]{1,2})%2F([0-9]{4})/)
+    if (date) {
+      title =
+        date[3] +
+        '-' +
+        date[2] +
+        '-' +
+        date[1] +
+        '_' +
+        title.replace(/%2F/g, '_')
+    }
+    documents.push({
+      fileurl: nodes[i].href,
+      vendor: VENDOR,
+      vendorRef: id,
+      filename: `${title}_${id}.pdf`
     })
   }
 
@@ -81,5 +110,5 @@ function parseDocuments() {
 }
 
 function extractDate(title) {
-  return title.replace(/^([0-9]+)\/([0-9]+)/, '$2-$1')
+  return title.replace(/^([0-9]+)\/([0-9]+)\/([0-9]+)/, '$3-$2-$1')
 }
