@@ -1,0 +1,75 @@
+{
+  "version": "1.0.0",
+  "name": "Connector template",
+  "type": "konnector",
+  "language": "node",
+  "icon": "icon.png",
+  "slug": "template",
+  "source": "git@github.com:konnectors/template.git",
+  "editor": "Cozy",
+  "vendor_link": "Link to the target website",
+  "categories": ["others"],
+  "fields": {
+    "login": {
+      "type": "text"
+    },
+    "password": {
+      "type": "password"
+    }
+  },
+  "folders": [{"defaultDir": "$administrative/$konnector/$account"}],
+  "data_types": [
+    "bill"
+  ],
+  "screenshots": [],
+  "permissions": {
+    "bills": {
+      "type": "io.cozy.bills"
+    },
+    "files": {
+      "type": "io.cozy.files"
+    },
+    "accounts": {
+      "type": "io.cozy.accounts"
+    }
+  },
+  "developer": {
+    "name": "Mikaël Salson",
+    "url": "https://github.com/mikael-s/"
+  },
+  "langs": ["fr", "en"],
+  "locales": {
+    "fr": {
+      "short_description": "Récupère dans votre Cozy les relevés de remboursements et vos attestations",
+      "long_description": "<p>MGC est une assurance santé accessible sur <a href=\"https://www.mutuellemgc.fr\">www.mutuellemgc.fr</a>.</p><p>Ce connecteur permet de rappatrier sur votre Drive les dernières attestations et remboursements accessibles sur le site de l'assurance.</p>",
+      "permissions": {
+        "bills": {
+          "description": "Utilisé pour sauver les données des factures"
+        },
+        "files": {
+          "description": "Utilisé pour sauvegarder les factures"
+        },
+        "accounts": {
+          "description": "Utilisé pour obtenir les données du compte"
+        }
+      }
+    },
+    "en": {
+      "short_description": "Fetch your reimbursment statements",
+      "long_description": "<p><a href=\"https://www.mutuellemgc.fr\">MGC</a> is a French health insurance.</p><p>This connector fetches the latest reimbursment statements on your Cozy Drive.</p>",
+      "permissions": {
+        "bills": {
+          "description": "Required to save the bills data"
+        },
+        "files": {
+          "description": "Required to save the bills"
+        },
+        "accounts": {
+          "description": "Required to get the account's data"
+        }
+      }
+    }
+  },
+  "banksTransactionRegExp": "\\bMgc\\b",
+  "manifest_version": "2"
+}
